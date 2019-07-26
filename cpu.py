@@ -185,7 +185,7 @@ class CPU:
             operand_b = self.ram_read(IR + 2)
             # self.trace()
             if self.ram[IR] == int(0b00000001):               # HLT base case: exit loop
-                print("HALT")
+                # print("HALT")
                 running = False
             else:
                 self.dispatch(self.ram[IR], operand_a, operand_b)
