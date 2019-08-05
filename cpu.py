@@ -10,7 +10,6 @@ class CPU:
         self.register = [0] * 8
         self.ram = [0] * 256
         self.register[7] = len(self.ram) - 1    # stack pointer
-        # self.register[8] = 0                    # program pointer
         self.pc = 0
         # ================= Dispatcher table ================== #
         self.branchtable = {}
@@ -58,14 +57,11 @@ class CPU:
 
     # ======== Stack functions ====== #
     def sudo_push(self, operand_a, operand_b):      # PUSH to RAM
-        # print("SUDO PUSH")
-        # print("Reg 7: ", self.register[7])
         self.ram[self.register[7]] = self.register[operand_a]
-        self.register[7] -= 1 # self.ram[254]
+        self.register[7] -= 1
         self.pc += 2
 
     def sudo_pop(self, operand_a, operand_b):       # POP from RAM
-        # print("SUDO POP")
         self.register[7] += 1
         self.register[operand_a] = self.ram[self.register[7]]
         self.pc += 2
@@ -90,7 +86,6 @@ class CPU:
 
     def jne(self, operand_a, operand_b):
         bit_wise_equality = self.register[6] & 0b00000001
-        # print("equality: ", equality)
         if bit_wise_equality == 0:
             self.jmp(operand_a, operand_b)
         else:
@@ -123,12 +118,8 @@ class CPU:
                     if num.strip() == '':  # ignore comment-only lines
                         continue
                     num = '0b' + num
-                    # print(num)
                     self.ram[address] = int(num, 2)
-                    # self.register[8] += 1
                     address += 1
-            
-            # print(self.ram)
 
         except FileNotFoundError:
             print(f"{sys.argv[0]}: {sys.argv[1]} not found")
@@ -156,15 +147,12 @@ class CPU:
         elif op == "CMP":
             if self.register[reg_a] > self.register[reg_b]:
                 self.register[6] = 0b00000010
-                # print("Greater than")
                 self.pc += 3
             elif self.register[reg_a] < self.register[reg_b]:
                 self.register[6] = 0b00000100
-                # print("Less than")
                 self.pc += 3
             elif self.register[reg_a] == self.register[reg_b]:
                 self.register[6] = 0b00000001
-                # print("Equal to")
                 self.pc += 3
         else:
             raise Exception("Unsupported ALU operation")
@@ -186,8 +174,6 @@ class CPU:
 
         for i in range(8):
             print(" %02X" % self.register[i], end='')
-        # self.register[7] = len(self.ram) - 1    # stack pointer
-        # self.register[8] = 0                    # program pointer
         print()
 
     def run(self):
@@ -199,7 +185,7 @@ class CPU:
             operand_b = self.ram_read(IR + 2)
             # self.trace()
             if self.ram[IR] == int(0b00000001):               # HLT base case: exit loop
-                print("HALT")
+                # print("HALT")
                 running = False
             else:
                 self.dispatch(self.ram[IR], operand_a, operand_b)
